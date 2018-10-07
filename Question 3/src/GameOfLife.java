@@ -72,12 +72,10 @@ public class GameOfLife {
 
         for (int k = -1; k <= 1; ++k) {
             for (int l = -1; l <= 1; l++) {
-                int ii = i + k;
-                int jj = j + l;
 
-                // Boundary conditions
-                if (ii == -1 || jj == -1 || ii == GRID_SIZE || jj == GRID_SIZE)
-                    continue;
+                // Periodic boundary conditions
+                int ii = (i + k + GRID_SIZE) % GRID_SIZE;
+                int jj = (j + l + GRID_SIZE) % GRID_SIZE;
 
                 // Leaving the cell itself
                 if (k == 0 && l == 0)
