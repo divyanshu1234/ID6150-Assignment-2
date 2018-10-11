@@ -1,17 +1,33 @@
 import java.util.Random;
 
+/*
+* Objects of this class can bbe used to simulate individual
+* Game of Life instances, each having its own size and
+* initial number of seeds
+*
+* Grid is processed as a boolean array, value of any cell
+* being 'true' indicates the presence of an organism in the
+* cell, and 'false' being the opposite
+*
+* */
+
 public class GameOfLife {
 
     // Setting up the parameters of the Game of Life
-    private static final int GRID_SIZE = 250;
-    private static final int NUM_SEEDS = 8000;
-    private static final float CELL_LENGTH = 1.0f / GRID_SIZE;
+    private final int gridSize;
+    private final int numSeeds;
+    private final float cellLength;
 
     private boolean[][] grid;
 
 
-    public GameOfLife() {
-        grid = new boolean[GRID_SIZE][GRID_SIZE];
+    public GameOfLife(int gridSize, int numSeeds) {
+        this.gridSize = gridSize;
+        this.numSeeds = numSeeds;
+        this.cellLength = 1.0f / gridSize;
+
+        // Initializing the grid
+        grid = new boolean[gridSize][gridSize];
         generateSeeds();
     }
 
@@ -20,9 +36,9 @@ public class GameOfLife {
     private void generateSeeds() {
         Random random = new Random();
 
-        for (int i = 0; i < NUM_SEEDS; i++) {
-            int xi = random.nextInt(GRID_SIZE);
-            int yi = random.nextInt(GRID_SIZE);
+        for (int i = 0; i < numSeeds; i++) {
+            int xi = random.nextInt(gridSize);
+            int yi = random.nextInt(gridSize);
             grid[yi][xi] = true;
         }
     }
@@ -31,16 +47,16 @@ public class GameOfLife {
     // Returns the next iteration of the grid
     public boolean[][] iterate() {
 
-        boolean newGrid[][] = new boolean[GRID_SIZE][GRID_SIZE];
+        boolean newGrid[][] = new boolean[gridSize][gridSize];
 
         // Copying old grid to new one
-        for (int i = 0; i < GRID_SIZE; ++i) {
-            System.arraycopy(grid[i], 0, newGrid[i], 0, GRID_SIZE);
+        for (int i = 0; i < gridSize; ++i) {
+            System.arraycopy(grid[i], 0, newGrid[i], 0, gridSize);
         }
 
         // Applying the rules to each element of the grid
-        for (int i = 0; i < GRID_SIZE; ++i) {
-            for (int j = 0; j < GRID_SIZE; ++j) {
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
                 int neighbourCount = getNeighbourCount(i, j);
 
                 // Organism is born
@@ -74,8 +90,8 @@ public class GameOfLife {
             for (int l = -1; l <= 1; l++) {
 
                 // Periodic boundary conditions
-                int ii = (i + k + GRID_SIZE) % GRID_SIZE;
-                int jj = (j + l + GRID_SIZE) % GRID_SIZE;
+                int ii = (i + k + gridSize) % gridSize;
+                int jj = (j + l + gridSize) % gridSize;
 
                 // Leaving the cell itself
                 if (k == 0 && l == 0)
@@ -90,12 +106,12 @@ public class GameOfLife {
     }
 
 
-    public static int getGridSize() {
-        return GRID_SIZE;
+    public int getGridSize() {
+        return gridSize;
     }
 
 
-    public static float getCellLength() {
-        return CELL_LENGTH;
+    public float getCellLength() {
+        return cellLength;
     }
 }

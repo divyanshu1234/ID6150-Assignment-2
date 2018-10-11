@@ -7,6 +7,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+/*
+* This class is uses OpenGL to draw the grid.
+* This takes an instance of GameOfLife and iterates
+* through it.
+*
+* */
+
 public class GridDrawer implements GLEventListener {
 
     // Parameters for dragging window functionality
@@ -24,20 +31,21 @@ public class GridDrawer implements GLEventListener {
     private float windowX = 0.0f;
     private float windowY = 0.0f;
 
-    private GameOfLife game;
-    private int gridSize;
-    private float cellLength;
+    private final GameOfLife game;
+    private final int gridSize;
+    private final float cellLength;
     private int frameIndex;
 
 
-    public GridDrawer() {
-        game = new GameOfLife(); // Initializing Game of Life
-
-        gridSize = GameOfLife.getGridSize();
-        cellLength = GameOfLife.getCellLength();
+    public GridDrawer(GameOfLife game) {
+        this.game = game;
+        this.gridSize = game.getGridSize();
+        this.cellLength = game.getCellLength();
         frameIndex = 0;
     }
 
+
+    // Initializes the window and starts the drawing process
     public void draw() {
         // Setting up the OpenGL window
         final GLProfile profile = GLProfile.get(GLProfile.GL2);
@@ -53,19 +61,24 @@ public class GridDrawer implements GLEventListener {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
+        // Adding zooming functionality
         glcanvas.addMouseWheelListener(new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
+                // Updating the zoom depending upon the mouse wheel rotation
                 zoom *= e.getWheelRotation() < 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR;
             }
         });
 
+        // Adding dragging functionality
         glcanvas.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 curScreenX = e.getX();
                 curScreenY = e.getY();
 
+                // Checking for false drags
+                // If drag is too much, then ignoring it
                 if (Math.abs(curScreenX - prevScreenX) > MAX_DRAG
                         || Math.abs(curScreenY - prevScreenY) > MAX_DRAG) {
                     prevScreenX = curScreenX;
@@ -73,6 +86,7 @@ public class GridDrawer implements GLEventListener {
                     return;
                 }
 
+                // Updating the window position
                 windowX += (curScreenX - prevScreenX) / DRAG_FACTOR / zoom;
                 windowY += -(curScreenY - prevScreenY) / DRAG_FACTOR / zoom;
                 prevScreenX = curScreenX;
@@ -85,14 +99,18 @@ public class GridDrawer implements GLEventListener {
         animator.start();
     }
 
+
     @Override
     public void init(GLAutoDrawable glAutoDrawable) {
     }
+
 
     @Override
     public void dispose(GLAutoDrawable glAutoDrawable) {
     }
 
+
+    // OpenGL function used to draw each frame
     @Override
     public void display(GLAutoDrawable glAutoDrawable) {
         final GL2 gl = glAutoDrawable.getGL().getGL2();
@@ -126,6 +144,8 @@ public class GridDrawer implements GLEventListener {
     }
 
 
+    // Setting window properties from buffer
+    // in case the window size is changed by the user
     @Override
     public void reshape(GLAutoDrawable glAutoDrawable,
                         int i, int i1, int i2, int i3) {

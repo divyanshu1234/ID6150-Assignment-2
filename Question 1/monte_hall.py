@@ -2,6 +2,8 @@ import numpy as np
 import custom_random
 
 
+# Simulates the condition when the contestant never
+# swaps his/her choice
 def never_swap(correct, selection):
     n = len(correct)
     # Omitting redundant step of removing wrong answer
@@ -9,14 +11,22 @@ def never_swap(correct, selection):
     return num_wins / n
 
 
+# Simulates the condition when the contestant always
+# swaps his/her choice
 def always_swap(correct, selection):
     n = len(correct)
     num_wins = 0
 
     for i in range(n):
+        # Getting the set of available choices for
+        # the host to remove
+        # Host cannot remove the correct choice
         available_choices = [0, 1, 2]
         available_choices.remove(correct[i])
 
+        # Host cannot remove the initial selection as well
+        # Checking if initial selection was already removed
+        # or not, if not then removing it
         if available_choices.__contains__(selection[i]):
             available_choices.remove(selection[i])
 
@@ -30,22 +40,35 @@ def always_swap(correct, selection):
     return num_wins / n
 
 
+# Simulates the condition when the user tosses a coin
+# To select the new door
 def coin_toss(correct, selection):
     n = len(correct)
     num_wins = 0
 
     for i in range(n):
+        # Getting the set of available choices for
+        # the host to remove
+        # Host cannot remove the correct choice
         available_choices = [0, 1, 2]
-
-        # Removing a wrong answer from available choices
         available_choices.remove(correct[i])
 
+        # Host cannot remove the initial selection as well
+        # Checking if initial selection was already removed
+        # or not, if not then removing it
         if available_choices.__contains__(selection[i]):
             available_choices.remove(selection[i])
 
+        # Now the list only contains wrong answers
+        # Randomly removing one from the list
         available_choices.remove(custom_random.choice(available_choices))
-        available_choices.append(correct[i])  # Adding the correct choice back
 
+        # Adding the correct choice back
+        available_choices.append(correct[i])
+
+        # Adding the selected choice back
+        # If the initial selection was the correct choice
+        # then no need to add it again
         if not available_choices.__contains__(selection[i]):
             available_choices.append(selection[i])
 
@@ -58,9 +81,9 @@ def coin_toss(correct, selection):
     return num_wins / n
 
 
-NUM_SIMULATIONS = 10000
-correct = custom_random.randint(low=0, high=3, size=NUM_SIMULATIONS)
-selection = custom_random.randint(low=0, high=3, size=NUM_SIMULATIONS)
+num_simulations = int(input('Enter the number of simulations: '))
+correct = custom_random.randint(low=0, high=3, size=num_simulations)
+selection = custom_random.randint(low=0, high=3, size=num_simulations)
 
 print('Never Swap:', never_swap(correct, selection))
 print('Always Swap:', always_swap(correct, selection))

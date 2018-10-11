@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import custom_random
 
 
+# Returns an array which contains the sizes of different grains
 def get_grain_sizes(psi):
     sizes = []
 
@@ -28,7 +29,7 @@ def get_grain_sizes(psi):
 
 
 # Divides the grain sizes according to the range they lie in
-def get_distribution(sizes, bin_size=10):
+def get_distribution(sizes, bin_size):
     dist = init_distribution_dict(bin_size, max(sizes))
 
     for s in sizes:
@@ -39,6 +40,8 @@ def get_distribution(sizes, bin_size=10):
 
 
 # Initializes all entries of distribution dictionary to 0
+# The size range string is used as the key to get the
+# number of grains in that range
 def init_distribution_dict(bin_size, max_element):
     dist = {}
 
@@ -61,13 +64,13 @@ def get_elem_range_str(elem, bin_size):
     return rs
 
 
-def process_psi(file_name):
+def process_psi(file_name, bin_size=10):
     psi = pd.read_csv(filepath_or_buffer=file_name,
                       delimiter='  ', engine='python',
                       header=None)
 
     grain_sizes = get_grain_sizes(psi)
-    dist = get_distribution(grain_sizes)
+    dist = get_distribution(grain_sizes, bin_size)
 
     mean_size = np.mean(grain_sizes)
     frequency = 1 / (mean_size**2)
@@ -80,6 +83,7 @@ def process_psi(file_name):
     plt.ylabel('Number of Grains')
 
 
-process_psi('psi_1.dat')
-process_psi('psi_2.dat')
+bin_size = int(input('Enter the bin size: '))
+process_psi('psi_1.dat', bin_size)
+process_psi('psi_2.dat', bin_size)
 plt.show()
